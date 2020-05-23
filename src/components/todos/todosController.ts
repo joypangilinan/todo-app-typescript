@@ -1,60 +1,57 @@
 import { Request, Response } from "express";
 import Todo from "../../models/Todo";
 import httpErrors from "http-errors";
+import joiValidator from "../../utils/joiValidator";
+import todosSchema from "./todosSchema";
+import todosService from "./todosService";
 
 let todosController: { [key: string]: any } = {};
 
 todosController.todosByType = async (req: Request, res: Response) => {
   const { type } = req.params;
-  const todos = await Todo.find({ type });
 
-  res.json(todos);
+  const result = await todosService.todosByType(type);
+
+  res.json(result);
 };
 
 todosController.createTodo = async (req: Request, res: Response) => {
-  const todoInfo = req.body;
-  const todo = await Todo.create({
-    ...todoInfo,
-  });
+  const { error, value: validatedRequestBody } = joiValidator(
+    req.body,
+    todosSchema.createTodo
+  );
 
-  await todo.save();
+  if (error) res.status(500).send(error.details);
 
-  res.json(todo);
+  const todoInfo = validatedRequestBody;
+
+  const result = await todosService.createTodo(todoInfo);
+
+  res.json(result);
 };
 
 todosController.todo = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const todo = await Todo.findOne({ _id: id });
 
-  if (!todo) throw httpErrors.NotFound();
+  const result = await todosService.todo(id);
 
-  res.json(todo);
+  res.json(result);
 };
 
 todosController.taskCompleted = async (req: Request, res: Response) => {
   const { id } = req.params;
-  let todoCompleted: any = {};
-  todoCompleted = await Todo.findOne({ _id: id }, { _id: 0, completed: 1 });
 
-  if (!todoCompleted) throw httpErrors.NotFound();
+  const result = await todosService.taskCompleted(id);
 
-  const updatedTodo = await Todo.findOneAndUpdate(
-    { _id: id },
-    { completed: !todoCompleted.completed },
-    { new: true }
-  );
-
-  res.json(updatedTodo);
+  res.json(result);
 };
 
 todosController.deleteTodo = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const deleteTodo = await Todo.findOneAndDelete({ _id: id });
+  const result = await todosService.deleteTodo(id);
 
-  if (!deleteTodo) throw httpErrors.NotFound();
-
-  res.json(deleteTodo);
+  res.json(result);
 };
 
 export default todosController;
