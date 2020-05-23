@@ -5,7 +5,7 @@
 - create env. file and add DB_URL=<your mongodb url>
 - yarn run watch to start the local server
 
-#TECHNOLOGIES
+# TECHNOLOGIES
 - Node JS
 - Express
 - Typescript
