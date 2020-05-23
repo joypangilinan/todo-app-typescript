@@ -4,3 +4,9 @@
 - install mongodb or create an account in mongo atlas (https://www.mongodb.com/cloud/atlas/register)
 - create env. file and add DB_URL=<your mongodb url>
 - yarn run watch to start the local server
+
+#TECHNOLOGIES
+- Node JS
+- Express
+- Typescript
+- MongoDB
